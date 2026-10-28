@@ -1,0 +1,27 @@
+{
+  "build": {
+    "core": "stm32",
+    "cpu": "cortex-m4",
+    "extra_flags": "-DSTM32L4 -DSTM32L432xx",
+    "f_cpu": "80000000L",
+    "mcu": "stm32l432kcu6",
+    "product_line": "STM32L432xx",
+    "variant": "STM32L4xx/L432K(B-C)U_L442KCU"
+  },
+  "debug": {
+    "default_tools": ["stlink"],
+    "jlink_device": "STM32L432KC",
+    "openocd_target": "stm32l4x",
+    "svd_path": "STM32L4x2.svd"
+  },
+  "frameworks": ["arduino"],
+  "name": "Generic STM32L432KC",
+  "upload": {
+    "maximum_ram_size": 65536,
+    "maximum_size": 262144,
+    "protocol": "stlink",
+    "protocols": ["stlink", "jlink", "cmsis-dap", "blackmagic"]
+  },
+  "url": "https://www.st.com/en/microcontrollers-microprocessors/stm32l432kc.html",
+  "vendor": "ST"
+}

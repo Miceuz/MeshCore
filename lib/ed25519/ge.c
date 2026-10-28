@@ -353,6 +353,31 @@ static void cmov(ge_precomp *t, const ge_precomp *u, unsigned char b) {
 }
 
 
+#ifdef ED25519_NO_BASE_TABLE
+/* constant-time double-and-add, no 30k precomputed table (small-flash targets) */
+static void p3_cmov(ge_p3 *t, const ge_p3 *u, unsigned char b) {
+    fe_cmov(t->X, u->X, b);
+    fe_cmov(t->Y, u->Y, b);
+    fe_cmov(t->Z, u->Z, b);
+    fe_cmov(t->T, u->T, b);
+}
+
+void ge_scalarmult_base(ge_p3 *h, const unsigned char *a) {
+    ge_p1p1 r;
+    ge_p3 t;
+    int i;
+
+    ge_p3_0(h);
+    for (i = 255; i >= 0; --i) {
+        ge_p3_dbl(&r, h);
+        ge_p1p1_to_p3(h, &r);
+        ge_madd(&r, h, &Bi[0]);
+        ge_p1p1_to_p3(&t, &r);
+        p3_cmov(h, &t, (a[i >> 3] >> (i & 7)) & 1);
+    }
+}
+
+#else
 static void select(ge_precomp *t, int pos, signed char b) {
     ge_precomp minust;
     unsigned char bnegative = negative(b);
@@ -437,6 +462,8 @@ void ge_scalarmult_base(ge_p3 *h, const unsigned char *a) {
 /*
 r = p - q
 */
+
+#endif
 
 void ge_sub(ge_p1p1 *r, const ge_p3 *p, const ge_cached *q) {
     fe t0;

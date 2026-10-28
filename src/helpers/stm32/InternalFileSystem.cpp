@@ -79,6 +79,9 @@ static int _internal_flash_erase(const struct lfs_config *c, lfs_block_t block)
         return LFS_ERR_INVAL;
     }
     EraseInitStruct.Page = (address - FLASH_BASE) / FLASH_PAGE_SIZE;
+#if defined(STM32L4xx)
+    EraseInitStruct.Banks = FLASH_BANK_1;
+#endif
     HAL_FLASH_Unlock();
     hal_rc = HAL_FLASHEx_Erase(&EraseInitStruct, &pageError);
     HAL_FLASH_Lock();

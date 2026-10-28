@@ -383,6 +383,7 @@ void CommonCLI::handleCommand(uint32_t sender_timestamp, const char* command, ch
       } else if (memcmp(config, "bridge.secret", 13) == 0) {
         sprintf(reply, "> %s", _prefs->bridge_secret);
 #endif
+#ifndef CLI_MINIMAL  // dropped on small-flash builds
       } else if (memcmp(config, "bootloader.ver", 14) == 0) {
       #ifdef NRF52_PLATFORM
           char ver[32];
@@ -427,6 +428,7 @@ void CommonCLI::handleCommand(uint32_t sender_timestamp, const char* command, ch
         sprintf(reply, "> %u mV", _board->getBootVoltage());
 #else
         strcpy(reply, "ERROR: Power management not supported");
+#endif
 #endif
       } else {
         sprintf(reply, "??: %s", config);
@@ -665,6 +667,7 @@ void CommonCLI::handleCommand(uint32_t sender_timestamp, const char* command, ch
         savePrefs();
         strcpy(reply, "OK");
 #endif
+#ifndef CLI_MINIMAL  // dropped on small-flash builds
       } else if (memcmp(config, "adc.multiplier ", 15) == 0) {
         _prefs->adc_multiplier = atof(&config[15]);
         if (_board->setAdcMultiplier(_prefs->adc_multiplier)) {
@@ -678,6 +681,7 @@ void CommonCLI::handleCommand(uint32_t sender_timestamp, const char* command, ch
           _prefs->adc_multiplier = 0.0f;
           strcpy(reply, "Error: unsupported by this board");
         };
+#endif
       } else {
         sprintf(reply, "unknown config: %s", config);
       }
@@ -688,6 +692,7 @@ void CommonCLI::handleCommand(uint32_t sender_timestamp, const char* command, ch
       sprintf(reply, "%s (Build: %s)", _callbacks->getFirmwareVer(), _callbacks->getBuildDate());
     } else if (memcmp(command, "board", 5) == 0) {
       sprintf(reply, "%s", _board->getManufacturerName());
+#ifndef CLI_MINIMAL  // dropped on small-flash builds
     } else if (memcmp(command, "sensor get ", 11) == 0) {
       const char* key = command + 11;
       const char* val = _sensors->getSettingByKey(key);
@@ -732,6 +737,7 @@ void CommonCLI::handleCommand(uint32_t sender_timestamp, const char* command, ch
           *(dp-1) = 0; // remove last CR
         }
       }
+#endif
 #if ENV_INCLUDE_GPS == 1
     } else if (memcmp(command, "gps on", 6) == 0) {
       if (_sensors->setSettingValue("gps", "1")) {
@@ -811,6 +817,7 @@ void CommonCLI::handleCommand(uint32_t sender_timestamp, const char* command, ch
         strcpy(reply, "Can't find GPS");
       }
 #endif
+#ifndef CLI_MINIMAL  // dropped on small-flash builds
     } else if (memcmp(command, "powersaving on", 14) == 0) {
       _prefs->powersaving_enabled = 1;
       savePrefs();
@@ -837,6 +844,7 @@ void CommonCLI::handleCommand(uint32_t sender_timestamp, const char* command, ch
     } else if (sender_timestamp == 0 && memcmp(command, "log", 3) == 0) {
       _callbacks->dumpLogFile();
       strcpy(reply, "   EOF");
+#endif
     } else if (sender_timestamp == 0 && memcmp(command, "stats-packets", 13) == 0 && (command[13] == 0 || command[13] == ' ')) {
       _callbacks->formatPacketStatsReply(reply);
     } else if (sender_timestamp == 0 && memcmp(command, "stats-radio", 11) == 0 && (command[11] == 0 || command[11] == ' ')) {
